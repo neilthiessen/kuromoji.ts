@@ -24,18 +24,17 @@ var tokenizer = null;
 // var lattice;  // Very large object. Unwatch this object from Model.
 // var renderer = new dagreD3.Renderer();
 
-
 var vm = new Vue({
-    el: "#demo",
-    data: {
-        inputText: "",
-        tokens: [],
-        isLoading: true,
-        message: "Loading dictionaries ...",
-        svgStyle: "hidden"
-    },
-    methods: {
-        /*
+  el: "#demo",
+  data: {
+    inputText: "",
+    tokens: [],
+    isLoading: true,
+    message: "Loading dictionaries ...",
+    svgStyle: "hidden",
+  },
+  methods: {
+    /*
         drawGraph: function () {
             if (lattice != null) {
                 drawLattice();
@@ -43,46 +42,43 @@ var vm = new Vue({
             }
         },
         */
-        tokenize: function () {
-            if (vm.inputText == "" || tokenizer == null) {
-                vm.tokens = [];
-                // lattice = null;
-                return;
-            }
-            try {
-                // lattice = tokenizer.getLattice(vm.inputText);
-                vm.tokens = tokenizer.tokenize(vm.inputText);
-            } catch (e) {
-                console.log(e);
-                // lattice = null;
-                vm.tokens = [];
-            }
-        }
-    }
+    tokenize: function () {
+      if (vm.inputText == "" || tokenizer == null) {
+        vm.tokens = [];
+        // lattice = null;
+        return;
+      }
+      try {
+        // lattice = tokenizer.getLattice(vm.inputText);
+        vm.tokens = tokenizer.tokenize(vm.inputText);
+      } catch (e) {
+        console.log(e);
+        // lattice = null;
+        vm.tokens = [];
+      }
+    },
+  },
 });
-
 
 // フォームの内容が変化したらtokenizeする
 vm.$watch("inputText", function (value) {
-    // vm.graphEnabled = false;
-    vm.svgStyle = "hidden";
-    vm.tokenize();
+  // vm.graphEnabled = false;
+  vm.svgStyle = "hidden";
+  vm.tokenize();
 });
-
 
 // Load and prepare tokenizer
 kuromoji.builder({ dicPath: DIC_URL }).build(function (error, _tokenizer) {
-    if (error != null) {
-        console.log(error);
-    }
-    tokenizer = _tokenizer;
+  if (error != null) {
+    console.log(error);
+  }
+  tokenizer = _tokenizer;
 
-    vm.message = "Ready";
+  vm.message = "Ready";
 
-    vm.inputText = "すもももももももものうち";
-    vm.isLoading = false;
+  vm.inputText = "すもももももももものうち";
+  vm.isLoading = false;
 });
-
 
 /*
 function drawLattice () {

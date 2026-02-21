@@ -22,7 +22,7 @@ var DIC_DIR = "dict/";
 
 // Load dictionaries from file, and prepare tokenizer
 kuromoji.builder({ dicPath: DIC_DIR }).build(function (error, tokenizer) {
-    var path = tokenizer.tokenize("すもももももももものうち");
-    console.log(path);
-    module.exports = tokenizer;
+  var path = tokenizer.tokenize("すもももももももものうち");
+  console.log(path);
+  module.exports = tokenizer;
 });
