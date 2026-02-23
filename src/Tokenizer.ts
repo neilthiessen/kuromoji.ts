@@ -21,7 +21,7 @@ import IpadicFormatter from "./util/IpadicFormatter.js";
 import DynamicDictionaries from "./dict/DynamicDictionaries.js";
 import TokenInfoDictionary from "./dict/TokenInfoDictionary.js";
 import UnknownDictionary from "./dict/UnknownDictionary.js";
-import { BaseFeatures, Formatter, IpadicFeatures } from "./types";
+import { Formatter, IpadicFeatures } from "./types";
 import ViterbiLattice from "./viterbi/ViterbiLattice.js";
 
 var PUNCTUATION = /、|。/;

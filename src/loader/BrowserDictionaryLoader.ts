@@ -42,7 +42,7 @@ class BrowserDictionaryLoader extends DictionaryLoader {
 
         response.arrayBuffer().then(function (arraybuffer) {
           var gz = gunzipSync(new Uint8Array(arraybuffer));
-          callback(null, gz.buffer);
+          callback(null, gz.buffer as ArrayBuffer);
         });
       })
       .catch(function (exception) {

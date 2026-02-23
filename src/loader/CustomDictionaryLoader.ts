@@ -16,33 +16,19 @@
  */
 
 // import { gunzip } from "zlib";
-import {
-  LoaderInternalCallback,
-  TauriReadFileFunc,
-  TokenizerBuilderOptions,
-} from "../types";
+import { LoaderInternalCallback, CustomReadFileFunc } from "../types";
 import DictionaryLoader from "./DictionaryLoader";
 
-class TauriDictionaryLoader extends DictionaryLoader {
-  readFile?: TauriReadFileFunc;
-  constructor(readFileFunc?: TauriReadFileFunc, dic_path?: string) {
-    // console.log("TauriDictionaryLoader constructor with ", dic_path);
-    // console.log(typeof readFileFunc);
+class CustomDictionaryLoader extends DictionaryLoader {
+  readFile: CustomReadFileFunc;
+  constructor(readFileFunc: CustomReadFileFunc, dic_path?: string) {
     super(dic_path);
     this.readFile = readFileFunc;
-    // console.log("TauriDictionaryLoader constructor function ", this.readFile);
     this.loadArrayBuffer = this.loadArrayBuffer.bind(this);
   }
-  /**
-   * Utility function
-   * @param {string} file Dictionary file path
-   * @param {TauriDictionaryLoader~onLoad} callback Callback function
-   */
+
   loadArrayBuffer(file: string, callback: LoaderInternalCallback) {
     // console.log("loading file: ", file);
-    if (!this.readFile) {
-      throw new Error("readFile function is not defined");
-    }
     this.readFile(file)
       .then((buffer) => {
         let ds = new DecompressionStream("gzip");
@@ -54,13 +40,6 @@ class TauriDictionaryLoader extends DictionaryLoader {
             var typed_array = new Uint8Array(decompressedBuffer);
             callback(null, typed_array.buffer);
           });
-        // gunzip(buffer, function (err2, decompressed) {
-        //     if (err2) {
-        //         return callback(err2);
-        //     }
-        //     var typed_array = new Uint8Array(decompressed);
-        //     callback(null, typed_array.buffer);
-        // });
       })
       .catch((err) => {
         console.error(err);
@@ -91,10 +70,4 @@ class TauriDictionaryLoader extends DictionaryLoader {
   }
 }
 
-/**
- * @callback NodeDictionaryLoader~onLoad
- * @param {Object} err Error object
- * @param {Uint8Array} buffer Loaded buffer
- */
-
-export default TauriDictionaryLoader;
+export default CustomDictionaryLoader;

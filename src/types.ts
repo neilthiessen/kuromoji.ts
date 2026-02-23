@@ -41,10 +41,10 @@ export interface IpadicFeatures extends BaseFeatures {
   pronunciation?: string | undefined;
 }
 
-export type TauriReadFileFunc = (
+export type CustomReadFileFunc = (
   path: string,
   options?: any,
-) => Promise<Uint8Array>;
+) => Promise<Uint8Array<ArrayBuffer>>;
 
 export type TokenizerBuilderOptions =
   | {
@@ -57,8 +57,8 @@ export type TokenizerBuilderOptions =
     }
   | {
       dicPath: string;
-      readFileFunc: TauriReadFileFunc;
-      loadMethod: "tauri";
+      readFileFunc: CustomReadFileFunc;
+      loadMethod: "custom";
     };
 
 type Key = {

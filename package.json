@@ -28,6 +28,8 @@
   },
   "scripts": {
     "build": "rollup --config",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "build-demo": "gulp build-demo",
     "build-dict": "gulp build-dict",
     "clean": "gulp clean",

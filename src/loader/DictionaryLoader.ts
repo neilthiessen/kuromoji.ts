@@ -18,7 +18,7 @@
 import DynamicDictionaries from "../dict/DynamicDictionaries.js";
 import {
   BufferPack,
-  TauriReadFileFunc,
+  CustomReadFileFunc,
   TokenizerBuilderOptions,
 } from "../types";
 import { FILE_NAMES } from "../types.js";
@@ -32,8 +32,8 @@ import { FILE_NAMES } from "../types.js";
 class DictionaryLoader {
   dic: DynamicDictionaries;
   dic_path: string;
-  readFileFunc: TauriReadFileFunc | undefined;
-  constructor(dic_path?: string, readFileFunc?: TauriReadFileFunc) {
+  readFileFunc: CustomReadFileFunc | undefined;
+  constructor(dic_path?: string, readFileFunc?: CustomReadFileFunc) {
     // console.log("DictionaryLoader constructor");
     this.dic = new DynamicDictionaries();
     this.dic_path = dic_path ?? "";

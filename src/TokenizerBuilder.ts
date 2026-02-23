@@ -16,8 +16,8 @@
  */
 
 import DictionaryLoader from "./loader/DictionaryLoader";
-import NodeDictionaryLoader from "./loader/NodeDictionaryLoader";
-import TauriDictionaryLoader from "./loader/TauriDictionaryLoader";
+// import NodeDictionaryLoader from "./loader/NodeDictionaryLoader";
+import CustomDictionaryLoader from "./loader/CustomDictionaryLoader";
 import BrowserDictionaryLoader from "./loader/BrowserDictionaryLoader";
 
 import Tokenizer from "./Tokenizer.js";
@@ -25,7 +25,6 @@ import Tokenizer from "./Tokenizer.js";
 import type {
   BufferPack,
   IpadicFeatures,
-  TauriReadFileFunc,
   TokenizerBuilderOptions,
 } from "./types";
 import FromBufferLoader from "./loader/FromBufferLoader";
@@ -42,19 +41,20 @@ class TokenizerBuilder<T extends IpadicFeatures> {
   // readFileFunc: TokenizerBuilderOptions["readFileFunc"] | null;
   loader: DictionaryLoader | null;
   loadMethod: TokenizerBuilderOptions["loadMethod"];
-  constructor(option: TokenizerBuilderOptions) {
-    if (!("dicPath" in option) || option.dicPath == null) {
+  constructor(options: TokenizerBuilderOptions) {
+    if (!("dicPath" in options) || options.dicPath == null) {
       this.dic_path = "dict/";
     } else {
-      this.dic_path = option.dicPath;
+      this.dic_path = options.dicPath;
     }
     this.loader = null;
-    this.loadMethod = option.loadMethod;
+    this.loadMethod = options.loadMethod;
     if (this.loadMethod === "fs") {
-      this.loader = new NodeDictionaryLoader(this.dic_path);
-    } else if (option.loadMethod === "tauri") {
-      this.loader = new TauriDictionaryLoader(
-        option.readFileFunc,
+      throw new Error("fs load method removed for now");
+      // this.loader = new NodeDictionaryLoader(this.dic_path);
+    } else if (options.loadMethod === "custom") {
+      this.loader = new CustomDictionaryLoader(
+        options.readFileFunc,
         this.dic_path,
       );
     } else if (this.loadMethod === "fetch") {

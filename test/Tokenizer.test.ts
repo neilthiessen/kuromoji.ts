@@ -19,6 +19,7 @@ import { test, expect, describe, beforeAll } from "vitest";
 import { kuromoji } from "../src/kuromoji";
 import Tokenizer from "../src/Tokenizer";
 import { BaseFeatures, IpadicFeatures } from "../src/types";
+import { readFile } from "node:fs/promises";
 
 var DIC_DIR = "dict/";
 
@@ -55,7 +56,10 @@ describe("Tokenizer for IPADic", function () {
     tokenizer = await kuromoji
       .builder({
         dicPath: DIC_DIR,
-        loadMethod: "fs",
+        loadMethod: "custom",
+        readFileFunc: async (path) => {
+          return readFile(path);
+        },
       })
       .asyncBuild();
   });
@@ -169,7 +173,10 @@ describe("Tokenizer for IPADic", function () {
       var expected_token = expected_tokens[i];
       var target_token = path[i];
       for (var key in expected_token) {
-        expect(target_token).to.have.property(key, expected_token[key]);
+        expect(target_token).to.have.property(
+          key,
+          expected_token[key as keyof typeof expected_token],
+        );
       }
     }
   });
