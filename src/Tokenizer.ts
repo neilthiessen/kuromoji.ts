@@ -21,7 +21,8 @@ import IpadicFormatter from "./util/IpadicFormatter.js";
 import DynamicDictionaries from "./dict/DynamicDictionaries.js";
 import TokenInfoDictionary from "./dict/TokenInfoDictionary.js";
 import UnknownDictionary from "./dict/UnknownDictionary.js";
-import { Formatter, IpadicFeatures } from "./types";
+import UserDictionary from "./dict/UserDictionary.js";
+import { Formatter, IpadicFeatures, UserDictionaryEntry } from "./types";
 import ViterbiLattice from "./viterbi/ViterbiLattice.js";
 
 var PUNCTUATION = /、|。/;
@@ -38,6 +39,14 @@ class Tokenizer<T extends IpadicFeatures> {
     this.viterbi_builder = new ViterbiBuilder(dic);
     this.viterbi_searcher = new ViterbiSearcher(dic.connection_costs);
     this.formatter = new IpadicFormatter() as any as Formatter<T>; // TODO Other dictionaries
+  }
+  /**
+   * Inject a user dictionary to be used alongside the system dictionary in tokenization.
+   */
+  addUserDictionary(entries: UserDictionaryEntry[]) {
+    var user_dic = new UserDictionary();
+    user_dic.buildDictionary(entries);
+    this.viterbi_builder.user_dictionary = user_dic;
   }
   /**
    * Split into sentence by punctuation
@@ -119,8 +128,27 @@ class Tokenizer<T extends IpadicFeatures> {
           features,
           node.surface_form,
         );
+      } else if (node.type === "USER") {
+        if (!this.viterbi_builder.user_dictionary) {
+          features = [];
+        } else {
+          features_line = this.viterbi_builder.user_dictionary.getFeatures(
+            node.name.toString(),
+          );
+          if (features_line == null || features_line === "") {
+            features = [];
+          } else {
+            features = features_line.split(",");
+          }
+        }
+        token = this.formatter.formatEntry(
+          node.name,
+          last_pos + node.start_pos,
+          node.type,
+          features,
+        );
       } else {
-        // TODO User dictionary
+        // TODO User dictionary (other fallbacks)
         token = this.formatter.formatEntry(
           node.name,
           last_pos + node.start_pos,

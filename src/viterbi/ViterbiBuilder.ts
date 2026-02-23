@@ -21,6 +21,7 @@ import SurrogateAwareString from "../util/SurrogateAwareString.js";
 import DynamicDictionaries from "../dict/DynamicDictionaries.js";
 import TokenInfoDictionary from "../dict/TokenInfoDictionary.js";
 import UnknownDictionary from "../dict/UnknownDictionary.js";
+import UserDictionary from "../dict/UserDictionary.js";
 import { DoubleArray } from "../types";
 
 /**
@@ -30,6 +31,7 @@ class ViterbiBuilder {
   trie: DoubleArray;
   token_info_dictionary: TokenInfoDictionary;
   unknown_dictionary: UnknownDictionary;
+  user_dictionary?: UserDictionary;
   constructor(dic: DynamicDictionaries) {
     this.trie = dic.trie;
     this.token_info_dictionary = dic.token_info_dictionary;
@@ -45,7 +47,9 @@ class ViterbiBuilder {
     var key, trie_id, left_id, right_id, word_cost;
     for (var pos = 0; pos < sentence.length; pos++) {
       var tail = sentence.slice(pos);
+      console.log("tail=", tail);
       var vocabulary = this.trie.commonPrefixSearch(tail);
+      console.log("builtin vocab", vocabulary);
       for (var n = 0; n < vocabulary.length; n++) {
         // Words in dictionary do not have surrogate pair (only UCS2 set)
         trie_id = vocabulary[n].v;
@@ -79,6 +83,40 @@ class ViterbiBuilder {
               key,
             ),
           );
+        }
+      }
+
+      // User dictionary processing
+      if (this.user_dictionary) {
+        var user_vocabulary =
+          this.user_dictionary.trie.commonPrefixSearch(tail);
+        console.log("user vocab", user_vocabulary);
+        for (var n = 0; n < user_vocabulary.length; n++) {
+          trie_id = user_vocabulary[n].v;
+          key = user_vocabulary[n].k;
+
+          var user_token_info_ids = this.user_dictionary.target_map[trie_id];
+          if (user_token_info_ids) {
+            for (var i = 0; i < user_token_info_ids.length; i++) {
+              var user_token_info_id = user_token_info_ids[i];
+
+              word_cost = this.user_dictionary.word_cost[user_token_info_id];
+
+              // node_name, cost, start_index, length, type, left_id, right_id, surface_form
+              lattice.append(
+                new ViterbiNode(
+                  user_token_info_id,
+                  word_cost,
+                  pos + 1,
+                  key.length,
+                  "USER",
+                  0, // user dictionary words don't have distinct left/right ids right now
+                  0,
+                  key,
+                ),
+              );
+            }
+          }
         }
       }
 

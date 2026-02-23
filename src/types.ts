@@ -41,6 +41,20 @@ export interface IpadicFeatures extends BaseFeatures {
   pronunciation?: string | undefined;
 }
 
+export interface UserDictionaryEntry {
+  surface_form: string;
+  pos: string;
+  pos_detail_1?: string;
+  pos_detail_2?: string;
+  pos_detail_3?: string;
+  conjugated_type?: string;
+  conjugated_form?: string;
+  basic_form?: string;
+  reading?: string;
+  pronunciation?: string;
+  word_cost?: number; // Optional custom word cost override
+}
+
 export type CustomReadFileFunc = (
   path: string,
   options?: any,
