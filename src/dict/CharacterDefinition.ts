@@ -39,7 +39,6 @@ class CharacterDefinition {
   invoke_definition_map: InvokeDefinitionMap | null;
 
   constructor() {
-    console.log("CharacterDefinition constructor");
     this.character_category_map = new Uint8Array(65536); // for all UCS2 code points
     this.compatible_category_map = new Uint32Array(65536); // for all UCS2 code points
     this.invoke_definition_map = null;

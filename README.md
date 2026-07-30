@@ -92,3 +92,27 @@ The function tokenize() returns an JSON array like this:
 (This is defined in src/util/IpadicFormatter.js)
 
 See also [JSDoc page](https://takuyaa.github.io/kuromoji.js/jsdoc/) in details.
+
+## Custom User Dictionary Best Practices
+
+When adding words to the user dictionary using `addUserDictionary(...)`, your custom words are scored and mapped against the rest of the IPADIC dictionary.
+
+By default, the engine applies massive penalties (`1,000,000`) for transitioning to custom grammatical IDs (`left_id` and `right_id`) that don't exist in the base IPADIC connection costs, preventing your word from ever being tokenized in a sentence.
+
+To work gracefully alongside existing dictionary structures without defining complex `addCustomConnectionCosts` matrices, you should dynamically copy the `left_id` and `right_id` from a grammatically similar standard noun or counter when defining your word:
+
+    // 1. Ask the tokenizer for the grammar connections of a structurally identical native word
+    const standardNumRight = tokenizer.tokenize("100")[0].right_id;
+    const standardCounterLeft = tokenizer.tokenize("個")[0].left_id;
+
+    // 2. Wrap those native connection IDs onto your custom dictionary definitions!
+    tokenizer.addUserDictionary([
+      // "2024" behaves as a perfect drop-in replacement for the native number "100"
+      {
+        surface_form: "2024", pos: "名詞", reading: "ニセンニジュウヨン",
+        left_id: standardCounterLeft, right_id: standardNumRight,
+        word_cost: -10000
+      }
+    ]);
+
+This ensures your custom entries perfectly flow into natural Japanese sentences without mathematically punishing the tokenizer engine.

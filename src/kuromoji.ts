@@ -23,7 +23,7 @@ import { IpadicFeatures as IpadicFeaturesType } from "./types";
 // Public methods
 export const kuromoji = {
   builder: function (options: TokenizerBuilderOptions) {
-    console.log("new builder called with option: ", options);
+    // console.log("new builder called with option: ", options);
     // if (options.useWorker) {
     //   console.log("use worker");
     //   return new WorkerTokenizerBuilder(options);

@@ -47,9 +47,7 @@ class ViterbiBuilder {
     var key, trie_id, left_id, right_id, word_cost;
     for (var pos = 0; pos < sentence.length; pos++) {
       var tail = sentence.slice(pos);
-      console.log("tail=", tail);
       var vocabulary = this.trie.commonPrefixSearch(tail);
-      console.log("builtin vocab", vocabulary);
       for (var n = 0; n < vocabulary.length; n++) {
         // Words in dictionary do not have surrogate pair (only UCS2 set)
         trie_id = vocabulary[n].v;
@@ -90,7 +88,6 @@ class ViterbiBuilder {
       if (this.user_dictionary) {
         var user_vocabulary =
           this.user_dictionary.trie.commonPrefixSearch(tail);
-        console.log("user vocab", user_vocabulary);
         for (var n = 0; n < user_vocabulary.length; n++) {
           trie_id = user_vocabulary[n].v;
           key = user_vocabulary[n].k;
@@ -101,6 +98,9 @@ class ViterbiBuilder {
               var user_token_info_id = user_token_info_ids[i];
 
               word_cost = this.user_dictionary.word_cost[user_token_info_id];
+              left_id = this.user_dictionary.left_ids[user_token_info_id] ?? 0;
+              right_id =
+                this.user_dictionary.right_ids[user_token_info_id] ?? 0;
 
               // node_name, cost, start_index, length, type, left_id, right_id, surface_form
               lattice.append(
@@ -110,8 +110,8 @@ class ViterbiBuilder {
                   pos + 1,
                   key.length,
                   "USER",
-                  0, // user dictionary words don't have distinct left/right ids right now
-                  0,
+                  left_id,
+                  right_id,
                   key,
                 ),
               );

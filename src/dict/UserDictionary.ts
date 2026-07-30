@@ -30,18 +30,24 @@ class UserDictionary {
   target_map: Record<number, number[]>;
   features: Record<number, string[]>;
   word_cost: Record<number, number>;
+  left_ids: Record<number, number>;
+  right_ids: Record<number, number>;
 
   constructor() {
     this.trie = builder(0).build([{ k: "", v: 1 }]);
     this.target_map = {}; // trie_id -> token_info_id
     this.features = {}; // token_info_id -> features
     this.word_cost = {}; // token_info_id -> word_cost
+    this.left_ids = {}; // token_info_id -> left_id
+    this.right_ids = {}; // token_info_id -> right_id
   }
 
   buildDictionary(entries: UserDictionaryEntry[]) {
     this.target_map = {};
     this.features = {};
     this.word_cost = {};
+    this.left_ids = {};
+    this.right_ids = {};
 
     // Default low word cost (negative) so Viterbi favors user words over splitting them
     const DEFAULT_USER_COST = -100000;
@@ -63,6 +69,8 @@ class UserDictionary {
       this.target_map[trie_id].push(token_info_id);
 
       this.word_cost[token_info_id] = entry.word_cost ?? DEFAULT_USER_COST;
+      this.left_ids[token_info_id] = entry.left_id ?? 0;
+      this.right_ids[token_info_id] = entry.right_id ?? 0;
 
       this.features[token_info_id] = [
         surface_form,

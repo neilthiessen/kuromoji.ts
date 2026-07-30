@@ -22,7 +22,12 @@ import DynamicDictionaries from "./dict/DynamicDictionaries.js";
 import TokenInfoDictionary from "./dict/TokenInfoDictionary.js";
 import UnknownDictionary from "./dict/UnknownDictionary.js";
 import UserDictionary from "./dict/UserDictionary.js";
-import { Formatter, IpadicFeatures, UserDictionaryEntry } from "./types";
+import {
+  ConnectionCostOverride,
+  Formatter,
+  IpadicFeatures,
+  UserDictionaryEntry,
+} from "./types";
 import ViterbiLattice from "./viterbi/ViterbiLattice.js";
 
 var PUNCTUATION = /、|。/;
@@ -47,6 +52,18 @@ class Tokenizer<T extends IpadicFeatures> {
     var user_dic = new UserDictionary();
     user_dic.buildDictionary(entries);
     this.viterbi_builder.user_dictionary = user_dic;
+  }
+  /**
+   * Inject custom connection costs.
+   */
+  addCustomConnectionCosts(overrides: ConnectionCostOverride[]) {
+    for (const override of overrides) {
+      this.viterbi_searcher.connection_costs.putCustomCost(
+        override.forward_id,
+        override.backward_id,
+        override.cost,
+      );
+    }
   }
   /**
    * Split into sentence by punctuation
@@ -156,6 +173,10 @@ class Tokenizer<T extends IpadicFeatures> {
           [],
         );
       }
+
+      // todo: handle this better
+      token.left_id = node.left_id;
+      token.right_id = node.right_id;
 
       tokens.push(token);
     }

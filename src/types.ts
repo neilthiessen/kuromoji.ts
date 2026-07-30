@@ -27,6 +27,8 @@ export interface BaseFeatures {
   word_type: string;
   word_position: number;
   surface_form: string;
+  left_id?: number;
+  right_id?: number;
 }
 
 export interface IpadicFeatures extends BaseFeatures {
@@ -53,6 +55,14 @@ export interface UserDictionaryEntry {
   reading?: string;
   pronunciation?: string;
   word_cost?: number; // Optional custom word cost override
+  left_id?: number; // Optional custom left_id override
+  right_id?: number; // Optional custom right_id override
+}
+
+export interface ConnectionCostOverride {
+  forward_id: number;
+  backward_id: number;
+  cost: number;
 }
 
 export type CustomReadFileFunc = (

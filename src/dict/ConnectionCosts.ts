@@ -26,6 +26,8 @@ class ConnectionCosts {
   forward_dimension: number;
   backward_dimension: number;
   buffer: Int16Array;
+  custom_costs: Record<number, Record<number, number>> = {};
+
   constructor(forward_dimension: number, backward_dimension: number) {
     this.forward_dimension = forward_dimension;
     this.backward_dimension = backward_dimension;
@@ -42,10 +44,23 @@ class ConnectionCosts {
     }
     this.buffer[index] = cost;
   }
+  putCustomCost(forward_id: number, backward_id: number, cost: number) {
+    if (!this.custom_costs[forward_id]) {
+      this.custom_costs[forward_id] = {};
+    }
+    this.custom_costs[forward_id][backward_id] = cost;
+  }
   get(forward_id: number, backward_id: number) {
+    if (
+      this.custom_costs[forward_id] &&
+      this.custom_costs[forward_id][backward_id] !== undefined
+    ) {
+      return this.custom_costs[forward_id][backward_id];
+    }
     var index = forward_id * this.backward_dimension + backward_id + 2;
     if (this.buffer.length < index + 1) {
-      throw "ConnectionCosts buffer overflow";
+      // Degrade gracefully with a high cost if out of bounds, allowing custom out-of-bounds user dictionary word classes
+      return 1000000;
     }
     return this.buffer[index];
   }
